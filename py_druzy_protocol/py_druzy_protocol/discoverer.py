@@ -7,14 +7,17 @@ Created on 28 déc. 2015
 @author: druzy
 '''
 
+from twisted.internet import reactor
 from coherence.base import Coherence
 from coherence.upnp.devices.control_point import ControlPoint
-import threading
-from twisted.internet import reactor
+from real_device import UpnpRenderer
+from threading import Timer
 
 def get_discoverers():
-    '''renvoie les discoverers de ce module différent de Discoverer'''
-    pass
+    res=list()
+    res.append(UpnpRendererDiscoverer())
+    return res
+
     
 class Discoverer(object):
     '''squelette d'un discoverer'''
@@ -45,25 +48,44 @@ class Discoverer(object):
         self.stop_discovery()
         
 class UpnpRendererDiscoverer(Discoverer):
+    '''représente un découvreur de renderer UPNP'''
+    
     
     def __init__(self):
         Discoverer.__init__(self)
         
-    def start_discoverer(self,device_discover=lambda:()):
-        cp = ControlPoint(Coherence({'logmode':'warning'}),auto_client=['MediaRenderer'])
-        cp.connect(self._media_renderer_found, 'Coherence.UPnP.ControlPoint.MediaRenderer.detected')
-        cp.connect(self._media_renderer_removed, 'Coherence.UPnP.ControlPoint.MediaRenderer.removed')
-        
-        
-    def _media_renderer_found(self,client,udn):
-        print("media_renderer_found", client)
-        print("media_renderer_found", client.device.get_friendly_name())
-     
-    def _media_renderer_removed(self,udn):
-        print("media_renderer_removed", udn)
-        
-if __name__=="__main__":
-    u=UpnpRendererDiscoverer()
+    def start_discoverer(self,delay=10,identifier=str(),device_discovery=lambda :()):
+        '''voir Discoverer'''
+        self._device_discovery=device_discovery
+        reactor.callWhenRunning(self._start)
+        print("avant run")
+        Timer(10,self.stop_discovery).start()
+        reactor.run()
     
-    reactor.callWhenRunning(u.start_discoverer)
-    reactor.run()
+    def stop_discovery(self):
+        '''voir Discoverer'''
+        reactor.callFromThread(reactor.stop)
+    
+    def _start(self):
+        cp = ControlPoint(Coherence({'logmode':'warning', 'port':'12345'}))
+        cp.connect(self._media_renderer_found, 'Coherence.UPnP.ControlPoint.MediaRenderer.detected')
+             
+    def _media_renderer_found(self,client,udn):
+        #print("media_renderer_found", udn)
+        #print("client.device.__dict__ : ", client.device.__dict__)
+        self._device_discovery(UpnpRenderer(client))
+        
+    
+    def _media_renderer_removed(self,udn):
+        #print("media_renderer_removed", udn)
+        pass
+
+
+
+if __name__=="__main__":
+    
+    renderer_list=get_discoverers()
+    for renderer in renderer_list:
+        renderer.start_discoverer(delay=5)
+
+    

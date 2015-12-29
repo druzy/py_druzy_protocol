@@ -25,12 +25,12 @@ class Renderer(Device,Model):
     
     PORT_FILE=18041
     
-    def __init__(self,identifier,protocol,name,icon,duration=time(),timePosition=time(),volume=100,volumeMin=0,volumeMax=100,mute=False):
+    def __init__(self,identifier,protocol,name,icon,duration=time(),time_position=time(),volume=100,volume_min=0,volume_max=100,mute=False):
         Device.__init__(self,identifier,protocol,name,icon)
         self.duration=duration
-        self.timePosition=timePosition
+        self.time_position=time_position
         self.volume=volume
-        self.volumeMin=volumeMin
-        self.volumeMax=volumeMax
+        self.volume_min=volume_min
+        self.volume_max=volume_max
         
         

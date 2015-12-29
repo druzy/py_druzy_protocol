@@ -1,5 +1,5 @@
 protocol version 1 :
 Découverte et intéraction avec différents protocoles : 
-upnp :
-airplay :
-chromecast : 
+	upnp : découverte de service
+	airplay :
+	chromecast : 
