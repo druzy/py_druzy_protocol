@@ -11,7 +11,7 @@ from twisted.internet import reactor
 from coherence.base import Coherence
 from coherence.upnp.devices.control_point import ControlPoint
 from real_device import UpnpRenderer
-from threading import Timer
+from threading import Timer,Thread
 
 def get_discoverers():
     res=list()
@@ -58,9 +58,9 @@ class UpnpRendererDiscoverer(Discoverer):
         '''voir Discoverer'''
         self._device_discovery=device_discovery
         reactor.callWhenRunning(self._start)
-        print("avant run")
         Timer(10,self.stop_discovery).start()
-        reactor.run()
+        Thread(None,reactor.run).start()
+        
     
     def stop_discovery(self):
         '''voir Discoverer'''
