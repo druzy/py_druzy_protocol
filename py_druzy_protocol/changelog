@@ -1,4 +1,8 @@
+protocol v1.1 :
+correction bug UpnpRendererDiscoverer
+
 protocol version 1 :
+
 Découverte et intéraction avec différents protocoles : 
 	upnp : découverte de service
 	airplay :
