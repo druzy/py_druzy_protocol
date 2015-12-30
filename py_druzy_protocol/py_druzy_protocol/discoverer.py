@@ -54,7 +54,7 @@ class UpnpRendererDiscoverer(Discoverer):
     def __init__(self):
         Discoverer.__init__(self)
         
-    def start_discoverer(self,delay=10,identifier=str(),device_discovery=lambda :()):
+    def start_discovery(self,delay=10,identifier=str(),device_discovery=lambda :()):
         '''voir Discoverer'''
         self._device_discovery=device_discovery
         reactor.callWhenRunning(self._start)
@@ -84,8 +84,11 @@ class UpnpRendererDiscoverer(Discoverer):
 
 if __name__=="__main__":
     
+    def coucou(device):
+        print(device)
+    
     renderer_list=get_discoverers()
     for renderer in renderer_list:
-        renderer.start_discoverer(delay=5)
+        renderer.start_discovery(device_discovery=coucou)
 
     
