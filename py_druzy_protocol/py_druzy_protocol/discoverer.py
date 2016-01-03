@@ -7,10 +7,10 @@ Created on 28 déc. 2015
 @author: druzy
 '''
 
-from twisted.internet import reactor
+from real_device import UpnpRenderer
 from coherence.base import Coherence
 from coherence.upnp.devices.control_point import ControlPoint
-from real_device import UpnpRenderer
+from twisted.internet import reactor
 from threading import Timer,Thread
 
 def get_discoverers():
@@ -21,6 +21,8 @@ def get_discoverers():
     
 class Discoverer(object):
     '''squelette d'un discoverer'''
+    
+    MEDIA_RENDERER_TYPE="urn:schemas-upnp-org:device:MediaRenderer"
     
     def __init__(self):
         object.__init__(self)
@@ -54,34 +56,30 @@ class UpnpRendererDiscoverer(Discoverer):
     def __init__(self):
         Discoverer.__init__(self)
         
-    def start_discovery(self,delay=10,identifier=str(),device_discovery=lambda :()):
+    def start_discovery(self,delay=10,identifier=str(),device_discovery=None):
         '''voir Discoverer'''
         self._device_discovery=device_discovery
-        reactor.callWhenRunning(self._start)
-        Timer(10,self.stop_discovery).start()
+        config = {'logmode':'none'}
+        c=Coherence(config)
+        control=ControlPoint(c)
+        control.connect(self.media_renderer_filter,"Coherence.UPnP.Device.detection_completed")
+        #control.coherence.msearch.double_discover()
+        Timer(delay,self.stop_discovery).start()
         Thread(None,reactor.run).start()
         
-    
+        
     def stop_discovery(self):
         '''voir Discoverer'''
         reactor.callFromThread(reactor.stop)
-    
-    def _start(self):
-        cp = ControlPoint(Coherence({'logmode':'warning', 'port':'12345'}))
-        cp.connect(self._media_renderer_found, 'Coherence.UPnP.ControlPoint.MediaRenderer.detected')
-             
-    def _media_renderer_found(self,client,udn):
-        #print("media_renderer_found", udn)
-        #print("client.device.__dict__ : ", client.device.__dict__)
-        self._device_discovery(UpnpRenderer(client))
         
+    def restart_discovery(self):
+        self.stop_discovery()
+        
+        
+    def media_renderer_filter(self,device):
+        if Discoverer.MEDIA_RENDERER_TYPE in device.get_device_type():
+            self._device_discovery(UpnpRenderer(device))
     
-    def _media_renderer_removed(self,udn):
-        #print("media_renderer_removed", udn)
-        pass
-
-
-
 if __name__=="__main__":
     
     def coucou(device):

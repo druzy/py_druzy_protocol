@@ -12,7 +12,7 @@ from device import Renderer
 
 class UpnpRenderer(Renderer):
     
-    def __init__(self,client):
-        Renderer.__init__(self,identifier=client.device.udn,protocol="upnp",name=client.device.get_friendly_name(),icon=client.device.icons[0]["url"])
+    def __init__(self,device):
+        Renderer.__init__(self,identifier=device.udn,protocol="upnp",name=device.get_friendly_name(),icon=device.icons[0]["url"])
         
         
