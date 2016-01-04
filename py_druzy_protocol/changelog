@@ -1,3 +1,7 @@
+protocol v1.3 :
+Correction bug sur Renderer
+ajout égalité Device
+
 protocol v1.2 :
 Correction bug UpnpRendererDiscoverer
 
