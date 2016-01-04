@@ -33,6 +33,8 @@ class Renderer(Device,Model):
     
     def __init__(self,identifier,protocol,name,icon,duration=time(),time_position=time(),volume=100,volume_min=0,volume_max=100,mute=False):
         Device.__init__(self,identifier,protocol,name,icon)
+        Model.__init__(self)
+        
         self.duration=duration
         self.time_position=time_position
         self.volume=volume
