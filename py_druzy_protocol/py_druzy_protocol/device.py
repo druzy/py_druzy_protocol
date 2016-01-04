@@ -20,6 +20,12 @@ class Device(object):
         self.name=name
         self.icon=icon
         
+    def __eq__(self,other):
+        if isinstance(other,Device):
+            return self.identifier==other.identifier
+        else:
+            return False
+        
 class Renderer(Device,Model):
     '''squelette d'un appareil de rendu'''
     
