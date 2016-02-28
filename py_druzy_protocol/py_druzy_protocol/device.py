@@ -41,4 +41,15 @@ class Renderer(Device,Model):
         self.volume_min=volume_min
         self.volume_max=volume_max
         
+    def play(self):
+        pass
+    
+    def pause(self):
+        pass
+    
+    def stop(self):
+        pass
+    
+    def send(self,f):
+        pass
         

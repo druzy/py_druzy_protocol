@@ -13,6 +13,8 @@ from coherence.upnp.devices.control_point import ControlPoint
 from twisted.internet import reactor
 from threading import Timer,Thread
 
+import time
+
 def get_discoverers():
     res=list()
     res.append(UpnpRendererDiscoverer())
@@ -59,18 +61,19 @@ class UpnpRendererDiscoverer(Discoverer):
     def start_discovery(self,delay=10,identifier=str(),device_discovery=None):
         '''voir Discoverer'''
         self._device_discovery=device_discovery
-        config = {'logmode':'none'}
-        c=Coherence(config)
-        control=ControlPoint(c)
+        self.cohe=Coherence({'logmode':'none'})
+        control=ControlPoint(self.cohe)
         control.connect(self.media_renderer_filter,"Coherence.UPnP.Device.detection_completed")
-        #control.coherence.msearch.double_discover()
+
         Timer(delay,self.stop_discovery).start()
-        Thread(None,reactor.run).start()
+        Thread(target=reactor.run,kwargs={"installSignalHandlers":0}).start()
         
         
     def stop_discovery(self):
         '''voir Discoverer'''
-        reactor.callFromThread(reactor.stop)
+        reactor.callFromThread(self.cohe.shutdown)
+        self.cohe.shutdown()
+        #reactor.callFromThread(reactor.stop)
         
     def restart_discovery(self):
         self.stop_discovery()
@@ -83,7 +86,7 @@ class UpnpRendererDiscoverer(Discoverer):
 if __name__=="__main__":
     
     def coucou(device):
-        print(device)
+        pass
     
     renderer_list=get_discoverers()
     for renderer in renderer_list:
