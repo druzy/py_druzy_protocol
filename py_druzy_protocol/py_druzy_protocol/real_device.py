@@ -40,8 +40,11 @@ class UpnpRenderer(Renderer):
         
     def send(self, f):
         self._deferred_send=self._send(f)
+        self._deferred_send.addErrback(self.print_err)
         return True
         
+    def print_err(self,obj):
+        print(obj)
             
     @defer.inlineCallbacks
     def _send(self,f):
@@ -61,7 +64,7 @@ class UpnpRenderer(Renderer):
             item=DIDLLite.classChooser(mimetype)(id=f,parentID=os.path.dirname(f),title=os.path.splitext(os.path.basename(f))[0],creator="pymita")
             
             #démarrage du serveur
-            RestrictedFileServer(1532).add_file(f)
+            RestrictedFileServer(10034).add_file(f)
             yield self.av_transport.set_av_transport_uri(instance_id=self.av_transport_id,current_uri=RestrictedFileServer(1532).get_address(f))
             
             
